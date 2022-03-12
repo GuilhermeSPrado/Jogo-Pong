@@ -1,0 +1,187 @@
+<meta charset="UTF-8">
+<canvas width="500" height="500"></canvas>
+<script> 
+var tela = document.querySelector('canvas')
+let pincel = tela.getContext('2d')
+function borda () {
+pincel.fillStyle = 'black'
+pincel.fillRect (0,0,500,500)
+}
+
+
+var xBolinha = 250
+var yBolinha = 250
+var raio = 15
+//velocidade em X  --- velocidade em Y
+var mx = 5
+var my = 6
+
+
+function jogo () {
+    
+    limpaTela()
+    borda()
+    placar()
+    bolinha()
+    colisao()
+    movimento()
+    
+    //Meu personagem
+    raquete()
+    
+    colisaoRaquete ()
+    //Inimigo
+    inimigo ()
+    colisaoRaqueteOponente() 
+    desbugar () 
+    movimentoRaqueteInimigo()
+    
+}
+ 
+
+
+function bolinha () {
+    pincel.fillStyle = randColor()
+    pincel.beginPath()
+    pincel.arc(xBolinha,yBolinha,raio,0,2*3.14)
+    pincel.fill()
+    
+}
+
+setInterval (jogo,10)
+
+function movimento() {
+   xBolinha+=mx
+   yBolinha+=my
+}
+
+function limpaTela() {
+    pincel.clearRect (0,0,500,500)
+}
+//Colisão bolinha nas bordas
+function colisao() {
+    if (xBolinha+raio>500 || xBolinha-raio<0) {
+        mx*=-1
+        }
+
+    if (yBolinha+raio>500 || yBolinha-raio<0) {
+        my*=-1
+    }
+}
+
+// variáveis raquete
+var xRaquete = 5
+var yRaquete = 200
+let raqueteComp = 10
+let raqueteAlt = 80
+
+
+
+
+function raquete() {
+    pincel.fillStyle ='white'
+    pincel.fillRect (xRaquete,yRaquete,raqueteComp,raqueteAlt)   
+    
+}
+//Movimentação
+let w = 87;
+let s = 83;
+let taxa = 20
+
+//Movimentação Inimigo
+let velocidadeYOponente;
+
+
+
+//Colisão bolinha-raquete
+function colisaoRaquete () {
+    
+        if (xBolinha-raio<xRaquete+raqueteComp && yBolinha - raio<yRaquete+raqueteAlt && yBolinha+raio>yRaquete) {
+             mx *=-1;  
+  }
+}
+
+
+// raquete inimigo
+let xInimigo = 485
+let yInimigo = 200
+let inimigoComp = 10
+let inimigoAlt = 80
+
+
+function inimigo () {
+    pincel.fillStyle ='white'
+    pincel.fillRect (xInimigo,yInimigo,inimigoComp,inimigoAlt)   
+}
+
+
+
+function colisaoRaqueteOponente () {
+    
+    if (xBolinha+raio<xInimigo-inimigoComp && yBolinha+raio<yInimigo-inimigoAlt && yBolinha-raio>yInimigo) {
+         mx *=-1;  
+    }
+}
+
+
+function movimentoRaqueteInimigo (event) {
+ velocidadeYOponente=yBolinha - yInimigo - inimigoComp/2-30;
+ yInimigo +=velocidadeYOponente;
+    
+}
+
+
+
+function movimentoRaquete (evento) {
+  if (evento.keyCode==w) {yRaquete=yRaquete-taxa}
+
+  else if (evento.keyCode==s)
+  {yRaquete=yRaquete+taxa}
+    
+}
+document.onkeydown = movimentoRaquete;
+
+
+
+//Pontuação
+let meusPontos = 0;
+let pontosInimigo = 0;
+
+function placar() {
+    pincel.fillStyle = 'red'
+    pincel.font = '30px serif';
+    pincel.fillText(meusPontos, 180, 50);
+    pincel.fillText(pontosInimigo,300,50);
+    if (xBolinha>485) {meusPontos=meusPontos+1}
+    else if (xBolinha<15) {pontosInimigo+=1};
+    
+}
+
+
+let chanceDeErrar=0
+
+function calculaChanceDeErrar() {
+  if (pontosInimigo > meusPontos) {
+    chanceDeErrar +=1
+    if (chanceDeErrar >= 39){
+    chanceDeErrar = 40
+    }
+  } else {
+    chanceDeErrar -= 1
+    if (chanceDeErrar <= 35){
+    chanceDeErrar = 35
+    }
+  }
+}
+function desbugar () {
+if (xBolinha+raio<0) {xBolinha=250}
+
+}
+//Cor randomica para bolinha
+function randColor(){
+    return "#" + 
+           (Math.floor(Math.random() * 0x1000000) + 0x1000000)
+              .toString(16)
+              .substr(1);
+}
+</script>
